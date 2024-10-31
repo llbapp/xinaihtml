@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Streaming Chat Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #chatbox {
+            height: 300px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #userInput {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        #sendButton {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Streaming Chat Demo</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type your message here...">
+    <button id="sendButton">Send</button>
+
+    <script>
+        const chatbox = document.getElementById('chatbox');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+
+        const socket = new WebSocket('ws://localhost:8000/stream_chat');
+
+        socket.onopen = function(e) {
+            console.log("WebSocket connection established");
+        };
+
+        socket.onmessage = function(event) {
+            chatbox.innerHTML += event.data;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        };
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                console.log(`WebSocket connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                console.log('WebSocket connection died');
+            }
+        };
+
+        socket.onerror = function(error) {
+            console.log(`WebSocket error: ${error.message}`);
+        };
+
+        sendButton.onclick = function() {
+            const message = userInput.value;
+            socket.send(message);
+            chatbox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+            userInput.value = '';
+        };
+
+        userInput.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        };
+    </script>
+</body>
+</html>
