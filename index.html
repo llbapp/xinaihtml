@@ -39,7 +39,7 @@
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
 
-        const socket = new WebSocket('ws://localhost:8000/stream_chat');
+        const socket = new WebSocket('wss://u429062-8fab-3b5c769c.westb.seetacloud.com:8443/stream_chat');
 
         socket.onopen = function(e) {
             console.log("WebSocket connection established");
